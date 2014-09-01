@@ -4,14 +4,15 @@
 		<meta charset="utf-8">
 		<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
 	</head>
-	<body ng-app="myapp">
+	<body ng-app="MyApp">
 		<div class="row-fluid" ng-controller="DatePickerController">
-			<div class="span5">
-				<date-picker mes="mes" get-display-name="getDisplayName(columnName)"></date-picker>
+			<div class="span12">
+				<date-picker date-clicked="getDisplayName(day)" allow-past="false" start-date="21-10-2015"></date-picker>
 			</div>
 		</div>
 		<script type="text/javascript" src="js/libs/angular/angular.js"></script>
 		<script type="text/javascript" src="js/libs/angular/angular-resource.js"></script>
+		<script type="text/javascript" src="js/MyApp.js"></script>
 		<script type="text/javascript" src="js/Datepicker.js"></script>
 		<script type="text/javascript" src="js/DatePickerController.js"></script>
 	</body>

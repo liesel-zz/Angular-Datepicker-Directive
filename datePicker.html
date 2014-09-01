@@ -74,7 +74,7 @@
 		<div class="span7 backgroundTop">
 			<div class="span4"></div>
 			<div class="span4">
-				<h4 class="roundCornner">2014</h4>
+				<h4 class="roundCornner">{{y}}</h4>
 			</div>
 			<div class="span4"></div>
 		</div>
@@ -107,9 +107,9 @@
 	</div>
 	<div class="row-fluid">
 		<div class="span2"></div>
-		<div class="span1 dia buttons"><h4><<</h4></div>
+		<div class="span1 dia buttons" ng-click="SetDate(-1)"><h4><<</h4></div>
 		<div class="span5"></div>
-		<div class="span1 dia buttons"><h4>>></h4></div>
+		<div class="span1 dia buttons" ng-click="SetDate(1)"><h4>>></h4></div>
 		<div class="span2"></div>
 	</div>
 	<div class="row-fluid" ng-repeat="week in weeks">
