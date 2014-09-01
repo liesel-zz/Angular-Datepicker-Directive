@@ -2,18 +2,33 @@ var app = angular.module('FcamaraPicker', []);
  
 app.directive('datePicker', function() {
   return {
-      	restrict: 		'AE',
-      	replace: 		'true',
-      	templateUrl:  	'datePicker.html',
+      	restrict: 		      'AE',
+      	replace: 		        'true',
+      	templateUrl:  	    'datePicker.html',
       	scope: {
-          startDate:"@",
-          allowPast: "=",
-          callBackMethod:'&dateClicked'
+          rangeEnd:          "=",
+          startRange:        "=",
+          allowPast:         "=",
+          daysWithWindows:   "=",
+          dateClicked:       '&dateClicked',
+          dateChanged:       '&dateChanged'
     	   },
       	link: 			function(scope, elem, attrs){
+
+          scope.update          = true;
           scope.months          = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];       
           scope.monthPicker     = parseInt(new Date().getMonth(),10);
-          
+          scope.addMonth        = function(add){
+            scope.dateChanged({date:new Date(new Date().getFullYear(), scope.monthPicker+1, 1)});
+            scope.SetDate(add);
+          };
+          scope.removeMonth     = function(remove){
+            scope.dateChanged({date:new Date(new Date().getFullYear(), scope.monthPicker-1, 1)});
+            scope.SetDate(remove);
+          };
+          scope.$watch("startRange",function(newValue,oldValue) {
+            scope.SetDate(0);
+          });
           scope.SetDate         = function(monthToAdd){
             scope.monthPicker   = scope.monthPicker+monthToAdd;
             var actualDate      = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
@@ -36,14 +51,14 @@ app.directive('datePicker', function() {
                   day:      firstDay.getUTCDate(),
                   month:    firstDay.getMonth(),
                   year:     firstDay.getFullYear(),
-                  status:   "noWindows" 
+                  status:   "" 
                 };
               }else if(firstDay.getDay() < i){
                 day = {
                   day:      currentDate.getUTCDate(),
                   month:    currentDate.getMonth(),
                   year:     currentDate.getFullYear(),
-                  status:   "windows" 
+                  status:   "" 
                 };
                 currentDate = new Date(y ,m , currentDate.getUTCDate()+1);
               }else{
@@ -65,7 +80,7 @@ app.directive('datePicker', function() {
                     day:      currentDate.getUTCDate(),
                     month:    currentDate.getMonth(),
                     year:     currentDate.getFullYear(),
-                    status:   "windows"
+                    status:   "noWindows"
                   };  
                 }else{
                   day = {
@@ -89,6 +104,27 @@ app.directive('datePicker', function() {
               };    
               scope.weeks[scope.weeks.length] = weekDays;
             };
+            if (scope.daysWithWindows != undefined) {
+              for (var i = scope.daysWithWindows.length - 1; i >= 0; i--) {
+                var day = scope.daysWithWindows[i];
+                for (var j = scope.weeks.length - 1; j >= 0; j--) {
+                  var week = scope.weeks[j];
+                  for (var l = week.length - 1; l >= 0; l--){
+                    var dayVerify   =  week[l];
+                    var dateVerify  = new Date(dayVerify.year, dayVerify.month, dayVerify.day);
+                    if (day.getFullYear() == dayVerify.year && 
+                        day.getMonth()    == dayVerify.month && 
+                        day.getUTCDate()  == dayVerify.day) {
+                      dayVerify.status = "windows";
+                    }else if (dateVerify >= scope.startRange && dateVerify <= scope.rangeEnd && dayVerify.status != "windows") {
+                      dayVerify.status = "noWindows";
+                    }else if (dateVerify < scope.startRange || dateVerify > scope.rangeEnd) {
+                      dayVerify.status = "noData";
+                    }
+                  };
+                };
+              };
+            }
           };
 
           scope.clicked     = function(day){
@@ -97,7 +133,7 @@ app.directive('datePicker', function() {
             }else if(day.status == "daySelected") {
               day.status = "windows";
             }
-            console.log(scope.callBackMethod(
+            console.log(scope.dateClicked(
               {
                 day:{
                   day:    day.day,
