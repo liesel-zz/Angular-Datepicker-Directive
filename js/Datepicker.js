@@ -6,9 +6,11 @@ app.directive('datePicker', function() {
       	replace: 		'true',
       	templateUrl:  	'datePicker.html',
       	scope: {
-      		mes: '='
-    	},
+      		mes: '=',
+          callBackMethod:'&getDisplayName'
+    	   },
       	link: 			function(scope, elem, attrs){
+          console.log(scope.callBackMethod({columnName:"hurray"})); 
       		scope.rua           = "Nabuco de Araújo";
           scope.months        = ["Janeiro", "Fevereiro", "Março", "Abril", "Mario", "Junho", "Julho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro" ];       
           var date            = new Date(), y = date.getFullYear(), m = date.getMonth();
@@ -55,7 +57,6 @@ app.directive('datePicker', function() {
                   month:    currentDate.getMonth(),
                   year:     currentDate.getFullYear(),
                   status:   "windows"
-                  
                 };  
               }else{
                 day = {
@@ -81,8 +82,12 @@ app.directive('datePicker', function() {
             scope.weeks[scope.weeks.length] = weekDays;
 
           };
-          scope.clicado     = function(dia){
-      			
+          scope.clicked     = function(dia){
+      			if (dia.status == "windows") {
+              dia.status = "daySelected";
+            }else if(dia.status == "daySelected") {
+              dia.status = "windows";
+            }
       		}
 //      		elem.bind('click', function() {
   //      		elem.css('background-color', 'white');
